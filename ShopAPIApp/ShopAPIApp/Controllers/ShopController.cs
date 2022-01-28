@@ -17,17 +17,17 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_shopService.GetAll());
+            return Ok(await _shopService.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                return Ok(_shopService.GetById(id));
+                return Ok(await _shopService.GetByIdAsync(id));
             }
             catch (ShopNotFoundException ex)
             {
@@ -36,11 +36,11 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateShop createShop)
+        public async Task<IActionResult> Create(CreateShop createShop)
         {
             try
             {
-                var createdId = _shopService.Create(createShop);
+                var createdId = await _shopService.CreateAsync(createShop);
                 return Created("", createdId);
             }
             catch (ShopNotFoundException ex)
@@ -50,11 +50,11 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, CreateShop createShop)
+        public async Task<IActionResult> UpdateAsync(int id, CreateShop createShop)
         {
             try
             {
-                _shopService.Update(id, createShop);
+                await _shopService.UpdateAsync(id, createShop);
                 return NoContent();
             }
             catch (ShopNotFoundException ex)
@@ -64,11 +64,11 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                _shopService.Delete(id);
+                await _shopService.DeleteAsync(id);
                 return NoContent();
             }
             catch (ShopNotFoundException ex)

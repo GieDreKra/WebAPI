@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using ShopAPIApp.Data;
 using ShopAPIApp.Dtos;
 using ShopAPIApp.Models;
@@ -19,18 +20,18 @@ namespace ShopAPIApp.Services
             _shopService = shopService;
         }
 
-        public List<CreateShopItem> GetAll()
+        public async Task<List<CreateShopItem>> GetAllAsync()
         {
             var mapper = _mapperConfiguraion.CreateMapper();
-            List<ShopItem> items = _dataContext.Items.ToList();
+            List<ShopItem> items = await _dataContext.Items.ToListAsync();
             List<CreateShopItem> createShopItems = mapper.Map<List<ShopItem>, List<CreateShopItem>>(items);
             return createShopItems;
         }
 
-        public CreateShopItem GetById(int id)
+        public async Task<CreateShopItem> GetByIdAsync(int id)
         {
             var mapper = _mapperConfiguraion.CreateMapper();
-            var item = _dataContext.Items.Find(id);
+            var item = await _dataContext.Items.FindAsync(id);
             if (item == null)
             {
                 throw new ArgumentException("Shop item not found");
@@ -39,9 +40,9 @@ namespace ShopAPIApp.Services
             return createShopItem;
         }
 
-        public int Create(CreateShopItem createShopItem)
+        public async Task<int> CreateAsync(CreateShopItem createShopItem)
         {
-            var ShopName = _shopService.GetById(createShopItem.ShopId).Name;
+            var shop = await _shopService.GetByIdAsync(createShopItem.ShopId);
             ShopItem shopItem = new ShopItem()
             {
                 Name = createShopItem.Name,
@@ -49,13 +50,13 @@ namespace ShopAPIApp.Services
                 ShopId = createShopItem.ShopId
             };
             _dataContext.Add(shopItem);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
             return shopItem.Id;
         }
 
-        public void Update(int id, CreateShopItem createShopItem)
+        public async Task UpdateAsync(int id, CreateShopItem createShopItem)
         {
-            var updateModel = _dataContext.Items.Find(id);
+            var updateModel = await _dataContext.Items.FindAsync(id);
             if (updateModel == null)
             {
                 throw new ArgumentException("Shop item not found");
@@ -64,18 +65,18 @@ namespace ShopAPIApp.Services
             updateModel.Price = createShopItem.Price;
             updateModel.ShopId = createShopItem.ShopId;
             _dataContext.Update(updateModel);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var item = _dataContext.Items.Find(id);
+            var item = await _dataContext.Items.FindAsync(id);
             if (item == null)
             {
                 throw new ArgumentException("Shop item not found");
             }
             _dataContext.Remove(item);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

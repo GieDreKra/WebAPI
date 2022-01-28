@@ -19,17 +19,17 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_shopItemService.GetAll());
+            return Ok(await _shopItemService.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             try
             {
-                return Ok(_shopItemService.GetById(id));
+                return Ok(await _shopItemService.GetByIdAsync(id));
             }
             catch (ArgumentException ex)
             {
@@ -38,7 +38,7 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateShopItem createShopItem)
+        public async Task<IActionResult> CreateAsync(CreateShopItem createShopItem)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace ShopAPIApp.Controllers
                 {
                     return BadRequest(result);
                 }
-                var createdId = _shopItemService.Create(createShopItem);
+                var createdId = await _shopItemService.CreateAsync(createShopItem);
                 return Created("", createdId);
             }
             catch (ArgumentException ex)
@@ -62,13 +62,13 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, CreateShopItem createShopItem)
+        public async Task<IActionResult> UpdateAsync(int id, CreateShopItem createShopItem)
         {
             try
             {
                 ShopItemValidator validator = new ShopItemValidator();
                 validator.Validate(createShopItem, options => options.ThrowOnFailures());
-                _shopItemService.Update(id, createShopItem);
+                await _shopItemService.UpdateAsync(id, createShopItem);
                 return NoContent();
             }
             catch (ArgumentException ex)
@@ -82,11 +82,11 @@ namespace ShopAPIApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                _shopItemService.Delete(id);
+                await _shopItemService.DeleteAsync(id);
                 return NoContent();
             }
             catch (ArgumentException ex)
